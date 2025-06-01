@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.31.6)
+project(crc_benchmark C CXX)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# -- Find Google Benchmark
+find_package(benchmark REQUIRED)
+
+add_executable(crc_benchmark
+    src/crc_sse.c
+    src/crc_avx512_vpclmulqdq.c
+    crc_benchmark.cpp
+)
+
+target_include_directories(crc_benchmark PRIVATE src)
+target_link_libraries(crc_benchmark PRIVATE benchmark::benchmark pthread)
