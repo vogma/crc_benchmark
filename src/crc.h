@@ -18,6 +18,9 @@ uint32_t crc32_update_no_xor(uint32_t crc, const uint8_t *data, size_t len);
 // fastest tested in fast_crc32
 uint32_t avx512_vpclmulqdq_v3s2x4e(uint32_t crc0, const uint8_t *data, size_t len);
 
+uint32_t crc32_chrome_scalar(uint32_t crc, const uint8_t *buf, size_t len) {
+
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
