@@ -61,8 +61,17 @@ struct CrcFixture : benchmark::Fixture
         ioctl(fd_insn, PERF_EVENT_IOC_DISABLE, 0);
         ioctl(fd_cycles, PERF_EVENT_IOC_DISABLE, 0);
         uint64_t insn, cycles;
-        read(fd_insn, &insn, sizeof(insn));
-        read(fd_cycles, &cycles, sizeof(cycles));
+
+        ssize_t read_result = read(fd_insn, &insn, sizeof(insn));
+        ssize_t read_result2 = read(fd_cycles, &cycles, sizeof(cycles));
+
+        if (read_result < 1 || read_result2 < 1)
+        {
+            perror("read failed");
+            exit(1);
+        }
+
+        // ./autobench -i avx512_vpclmulqdq -p crc32c -a v3s4 100GB/s
 
         double ipc = double(insn) / double(cycles);
         double cpi = double(cycles) / double(state.bytes_processed());
@@ -71,7 +80,7 @@ struct CrcFixture : benchmark::Fixture
         // state.counters["IPC"] = ipc;
         state.counters["CyclesPerByte"] = cpi;
         state.counters["BytesPerCycles"] = 1 / cpi;
-        state.counters["InsnPerCycle"] = cpi2;
+        // state.counters["InsnPerCycle"] = cpi2; Data not plausible
 
         close(fd_insn);
         close(fd_cycles);
@@ -92,10 +101,47 @@ BENCHMARK_DEFINE_F(CrcFixture, crc_sse)(benchmark::State &state)
 
     for (auto _ : state)
     {
-        // state.PauseTiming();
-        // flush_caches();
-        // state.ResumeTiming();
         benchmark::DoNotOptimize(crc32_sse(0x00000000u, data.data(), size));
+    }
+
+    // report throughput in bytes
+    state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(size));
+}
+
+BENCHMARK_DEFINE_F(CrcFixture, avx512_vpclmulqdq_crc32c_v3s2x4)(benchmark::State &state)
+{
+    const size_t size = state.range(0);
+    std::vector<uint8_t> data(size, 0xA5);
+
+    // reset + enable counters
+    ioctl(this->fd_insn, PERF_EVENT_IOC_RESET, 0);
+    ioctl(this->fd_cycles, PERF_EVENT_IOC_RESET, 0);
+    ioctl(this->fd_insn, PERF_EVENT_IOC_ENABLE, 0);
+    ioctl(this->fd_cycles, PERF_EVENT_IOC_ENABLE, 0);
+
+    for (auto _ : state)
+    {
+        benchmark::DoNotOptimize(avx512_vpclmulqdq_crc32c_v3s2x4(0x00000000u, data.data(), size));
+    }
+
+    // report throughput in bytes
+    state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(size));
+}
+
+BENCHMARK_DEFINE_F(CrcFixture, crc32_update_no_xor)(benchmark::State &state)
+{
+    const size_t size = state.range(0);
+    std::vector<uint8_t> data(size, 0xA5);
+
+    // reset + enable counters
+    ioctl(this->fd_insn, PERF_EVENT_IOC_RESET, 0);
+    ioctl(this->fd_cycles, PERF_EVENT_IOC_RESET, 0);
+    ioctl(this->fd_insn, PERF_EVENT_IOC_ENABLE, 0);
+    ioctl(this->fd_cycles, PERF_EVENT_IOC_ENABLE, 0);
+
+    for (auto _ : state)
+    {
+        benchmark::DoNotOptimize(crc32_update_no_xor(0x00000000u, data.data(), size));
     }
 
     // report throughput in bytes
@@ -133,6 +179,14 @@ BENCHMARK_REGISTER_F(CrcFixture, crc_sse)
     ->Unit(benchmark::kMicrosecond);
 
 BENCHMARK_REGISTER_F(CrcFixture, crc32_avx512_vpclmulqdq)
+    ->Apply(CustomArgs)
+    ->Unit(benchmark::kMicrosecond);
+
+BENCHMARK_REGISTER_F(CrcFixture, avx512_vpclmulqdq_crc32c_v3s2x4)
+    ->Apply(CustomArgs)
+    ->Unit(benchmark::kMicrosecond);
+
+BENCHMARK_REGISTER_F(CrcFixture, crc32_update_no_xor)
     ->Apply(CustomArgs)
     ->Unit(benchmark::kMicrosecond);
 

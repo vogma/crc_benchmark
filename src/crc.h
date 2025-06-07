@@ -10,6 +10,8 @@ extern "C" {
 
 uint32_t crc32_sse(uint32_t crc0, const uint8_t *data, size_t len);
 uint32_t crc32_avx512_vpclmulqdq(uint32_t crc0, const uint8_t *data, size_t len);
+uint32_t avx512_vpclmulqdq_crc32c_v3s2x4(uint32_t crc0, const uint8_t *data, size_t len);
+uint32_t crc32_update_no_xor(uint32_t crc, const uint8_t *data, size_t len);
 
 
 #ifdef __cplusplus

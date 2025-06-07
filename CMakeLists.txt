@@ -12,6 +12,8 @@ add_subdirectory(submodules/google-benchmark)
 
 add_executable(crc_benchmark
     src/crc_sse.c
+    src/crc_gnulib.c
+    src/avx512_vpclmulqdq_crc32c_v3s2x4.c
     src/crc_avx512_vpclmulqdq.c
     crc_benchmark.cpp
 )
