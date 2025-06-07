@@ -168,6 +168,26 @@ BENCHMARK_DEFINE_F(CrcFixture, crc32_avx512_vpclmulqdq)(benchmark::State &state)
     state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(size));
 }
 
+BENCHMARK_DEFINE_F(CrcFixture, avx512_vpclmulqdq_v3s2x4e)(benchmark::State &state)
+{
+    const size_t size = state.range(0);
+    std::vector<uint8_t> data(size, 0xA5);
+
+    // reset + enable counters
+    ioctl(this->fd_insn, PERF_EVENT_IOC_RESET, 0);
+    ioctl(this->fd_cycles, PERF_EVENT_IOC_RESET, 0);
+    ioctl(this->fd_insn, PERF_EVENT_IOC_ENABLE, 0);
+    ioctl(this->fd_cycles, PERF_EVENT_IOC_ENABLE, 0);
+
+    for (auto _ : state)
+    {
+        benchmark::DoNotOptimize(avx512_vpclmulqdq_v3s2x4e(0x00000000u, data.data(), size));
+    }
+
+    // report throughput in bytes
+    state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(size));
+}
+
 static void CustomArgs(benchmark::internal::Benchmark *b)
 {
     for (auto s : {size_t(256), size_t(1024), size_t(2048), size_t(4 * 1024), size_t(8 * 1024), size_t(10 * 1024 * 1024), size_t(16 * 1024 * 1024), size_t(32 * 1024 * 1024), size_t(100 * 1024 * 1024)})
@@ -187,6 +207,10 @@ BENCHMARK_REGISTER_F(CrcFixture, avx512_vpclmulqdq_crc32c_v3s2x4)
     ->Unit(benchmark::kMicrosecond);
 
 BENCHMARK_REGISTER_F(CrcFixture, crc32_update_no_xor)
+    ->Apply(CustomArgs)
+    ->Unit(benchmark::kMicrosecond);
+
+BENCHMARK_REGISTER_F(CrcFixture, avx512_vpclmulqdq_v3s2x4e)
     ->Apply(CustomArgs)
     ->Unit(benchmark::kMicrosecond);
 
