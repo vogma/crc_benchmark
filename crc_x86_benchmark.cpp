@@ -20,9 +20,9 @@ static void pin_to_core(int core = 0)
 }
 
 // --- utility: simple cache flush by streaming a buffer > L3 into memory
-static void flush_caches()
+static void flush_caches(int l3_size_in_mb)
 {
-    static const size_t FLUSH_SIZE = 12 * 1024 * 1024; // 12 MB
+    static const size_t FLUSH_SIZE = l3_size_in_mb * 1024 * 1024; // 12 MB
     static std::vector<uint8_t> buf(FLUSH_SIZE, 1);
     volatile uint8_t sink = 0;
     for (size_t i = 0; i < FLUSH_SIZE; ++i)
@@ -51,7 +51,7 @@ struct CrcFixture : benchmark::Fixture
     void SetUp(benchmark::State &state) override
     {
         pin_to_core(0);
-        flush_caches();
+        flush_caches(12);
         fd_insn = open_perf(PERF_TYPE_HARDWARE, PERF_COUNT_HW_INSTRUCTIONS);
         fd_cycles = open_perf(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES);
     }

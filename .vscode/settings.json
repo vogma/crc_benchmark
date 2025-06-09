@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "arm_acle.h": "c"
+        "arm_acle.h": "c",
+        "algorithm": "cpp",
+        "cmath": "cpp"
     }
 }

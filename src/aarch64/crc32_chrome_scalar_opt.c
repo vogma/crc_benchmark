@@ -26,7 +26,6 @@ z_crc_t x2n_table[32];
 /* Definition of once functionality. */
 typedef struct once_s once_t;
 
-
 /* Structure for once(), which must be initialized with ONCE_INIT. */
 struct once_s
 {
@@ -91,8 +90,7 @@ void make_crc_table(void)
         x2n_table[n] = p = multmodp(p, p);
 }
 
-
- once_t made = ONCE_INIT;
+once_t made = ONCE_INIT;
 /*
   Return x^(n * 2^k) modulo p(x). Requires that x2n_table[] has been
   initialized.
@@ -112,8 +110,8 @@ z_crc_t x2nmodp(z_off64_t n, unsigned k)
     return p;
 }
 
-unsigned long crc32_z(unsigned long crc, const unsigned char *buf,
-                      size_t len)
+unsigned long crc32_chromium_scalar_opt(unsigned long crc, const unsigned char *buf,
+                                        size_t len)
 {
     z_crc_t val;
     z_word_t crc1, crc2;
