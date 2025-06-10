@@ -22,6 +22,9 @@ extern "C"
     // aarch64 function
     uint32_t crc32_chrome_scalar(uint32_t crc, const uint8_t *buf, size_t len);
     unsigned long crc32_chromium_scalar_opt(unsigned long crc, const unsigned char *buf, size_t len);
+    uint32_t armv8_crc32_pmull_little(uint32_t crc, const unsigned char *buf, size_t len);
+    uint32_t armv8_crc32_cloudfare_little(unsigned long crc, const unsigned char *buf, size_t len);
+
 
 #ifdef __cplusplus
 } // extern "C"

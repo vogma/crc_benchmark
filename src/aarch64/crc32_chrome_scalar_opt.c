@@ -80,7 +80,7 @@ z_crc_t multmodp(z_crc_t a, z_crc_t b)
 
 void make_crc_table(void)
 {
-    unsigned i, j, n;
+    unsigned n;
     z_crc_t p;
 
     /* initialize the x^2^n mod p(x) table */

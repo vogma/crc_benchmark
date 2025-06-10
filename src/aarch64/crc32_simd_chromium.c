@@ -5,8 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 
-//aarch64-none-linux-gnu-gcc -c crc32_simd_chromium.c -march='armv8.4-a+crypto+crc+sha3' -o test
-
+// aarch64-none-linux-gnu-gcc -c crc32_simd_chromium.c -march='armv8.4-a+crypto+crc+sha3' -o test
 
 #include <arm_neon.h>
 #include <arm_acle.h>
@@ -106,10 +105,7 @@ static inline uint8x16_t pmull_hi(const uint64x2_t a, const uint64x2_t b)
     return r;
 }
 
-TARGET_ARMV8_WITH_CRC uint32_t armv8_crc32_pmull_little(
-    const unsigned char *buf,
-    size_t len,
-    uint32_t crc)
+TARGET_ARMV8_WITH_CRC uint32_t armv8_crc32_pmull_little(uint32_t crc, const unsigned char *buf, size_t len)
 {
     /*
      * Definitions of the bit-reflected domain constants k1,k2,k3, etc and
