@@ -24,6 +24,8 @@ extern "C"
     unsigned long crc32_chromium_scalar_opt(unsigned long crc, const unsigned char *buf, size_t len);
     uint32_t armv8_crc32_pmull_little(uint32_t crc, const unsigned char *buf, size_t len);
     uint32_t armv8_crc32_cloudfare_little(unsigned long crc, const unsigned char *buf, size_t len);
+    uint32_t neon_eor3_crc32c_v9s3x2(uint32_t crc0, const uint8_t* data, size_t len);
+
 
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31.6)
+cmake_minimum_required(VERSION 3.28.3)
 
 
 set(TARGET_ARCH "x86" CACHE STRING "Target architecture to build: x86 or aarch64")
@@ -34,7 +34,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Do not build shared libraries")
-set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable Benchmark's tests")
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "Disable Benchmark's GTest tests")
 add_subdirectory(submodules/google-benchmark)
 
@@ -55,6 +54,7 @@ else()
     add_executable(crc_benchmark_aarch64
     src/aarch64/crc32_chrome_scalar_opt.c
     src/aarch64/crc32_chromium_scalar.c
+    src/aarch64/crc32_neon_eor3_v9s3x2.c
     src/aarch64/crc32_simd_cloudfare_zlib.c
     src/base/crc_gnulib.c
     src/aarch64/crc32_simd_chromium.c
