@@ -15,6 +15,8 @@ if(TARGET_ARCH STREQUAL "aarch64")
         add_compile_options(-march=native -O2)
 
     else()
+        message(STATUS "Host is ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+
         add_compile_options(-march=armv8.4-a+crc+crypto+sha3 -O2)
 
         set(CMAKE_C_COMPILER aarch64-none-linux-gnu-gcc CACHE PATH "C compiler for AArch64" FORCE)
@@ -55,6 +57,7 @@ else()
     src/aarch64/crc32_chrome_scalar_opt.c
     src/aarch64/crc32_chromium_scalar.c
     src/aarch64/crc32_neon_eor3_v9s3x2.c
+    src/aarch64/ab_neon_crc32c_v9s5x5.c
     src/aarch64/crc32_simd_cloudfare_zlib.c
     src/base/crc_gnulib.c
     src/aarch64/crc32_simd_chromium.c
